@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css" type="text/css">
+    <title>20GAME_SIZE8</title>
+</head>
+<body>
+    <div class="container">
+        <table id="main-table">
+        </table>
+    </div>
+</body>
+<script>
+    /*
+        todo
+
+        - check possible moves (if 0 -> game over)
+        - improve design
+        - sborrow
+    */
+    const TABLE = document.getElementById("main-table")
+    const GAME_SIZE = 4;
+
+    var gameField = new Array(GAME_SIZE);
+    var styleField = new Array(GAME_SIZE);
+    var free_cells = 0;
+
+    function init() {
+        for (let i = 0; i < GAME_SIZE; i++) {
+            gameField[i] = new Array(GAME_SIZE);
+            styleField[i] = new Array(GAME_SIZE);
+        }
+
+        gameField[Math.floor(Math.random() * (GAME_SIZE - 0) + 0)][Math.floor(Math.random() * (GAME_SIZE - 0) + 0)] = 2;
+        gameField[Math.floor(Math.random() * (GAME_SIZE - 0) + 0)][Math.floor(Math.random() * (GAME_SIZE - 0) + 0)] = 2;
+
+        free_cells = 16 - 3;
+    }
+
+    function reset() {
+        for (let i = 0; i < GAME_SIZE; i++) {
+            for (let j = 0; j < GAME_SIZE; j++) {
+                gameField[i][j] = undefined;
+            }
+        }
+
+        gameField[Math.floor(Math.random() * (GAME_SIZE - 0) + 0)][Math.floor(Math.random() * (GAME_SIZE - 0) + 0)] = 2;
+        gameField[Math.floor(Math.random() * (GAME_SIZE - 0) + 0)][Math.floor(Math.random() * (GAME_SIZE - 0) + 0)] = 2;
+
+        display()
+    }
+
+    function update() {
+        let = total = 0
+        for (let i = 0; i < GAME_SIZE; i++) {
+            for (let j = 0; j < GAME_SIZE; j++) {
+                if (gameField[i][j] != undefined) {
+                    total++;
+                }
+            
+            }
+        }
+
+        if (total == 16) {
+
+        }
+        
+        free_cells = total;
+    }
+
+    function generateRandomValue() {
+        let generating = true;
+        while (generating) {
+            
+            let i = Math.floor(Math.random() * (GAME_SIZE - 0) + 0);
+            let j = Math.floor(Math.random() * (GAME_SIZE - 0) + 0);
+            console.log(`${i} ${j}`)
+
+            if (gameField[i][j] == undefined) {
+                generating = false;
+                gameField[i][j] = 2;
+                styleField[i][j] = "new";
+            }
+        }
+    }
+
+    function mergeRight() {
+        console.log("d");
+
+        let moved = false;
+
+        for (let i = 0; i < GAME_SIZE; i++) {
+            let last_cell = GAME_SIZE-1;
+            let merge = false;
+            let mergeValue = -1;
+            let mergeValue_j = -1;
+            let mergeValue_i = -1;
+            for (let j = last_cell; j >= 0; j--) {
+                if (gameField[i][j] == undefined) {
+                    continue;
+                }
+
+                if (merge == false) {
+                    mergeValue_i = i;
+                    mergeValue_j = j;
+                    mergeValue = gameField[i][j];
+                    merge = true;
+                    continue;
+                }
+
+                if (gameField[i][j] == mergeValue) {
+                    gameField[mergeValue_i][mergeValue_j] = undefined;
+                    gameField[i][j] = mergeValue * 2;
+                    merge = false;
+                    moved = true;
+                    continue;
+                }
+
+                mergeValue = gameField[i][j];
+                mergeValue_i = i;
+                mergeValue_j = j;
+            }
+        }
+
+        for (let i = 0; i < GAME_SIZE; i++) {
+            let last_cell = GAME_SIZE-1;
+            for (let j = last_cell; j >= 0; j--) {
+                if (gameField[i][j] == undefined) {
+                    continue;
+                }
+
+                let value = gameField[i][j];
+                for (let k = j; k < last_cell; k++) {
+                    gameField[i][k] = undefined;
+                    gameField[i][k + 1] = value;
+                    moved = true;
+                }
+
+                last_cell -= 1;
+            }
+        }
+
+        if (moved) {
+            generateRandomValue();
+        }
+    }
+
+    function mergeLeft() {
+        console.log("a");
+
+        let moved = false;
+
+        for (let i = 0; i < GAME_SIZE; i++) {
+            let last_cell = 0;
+            let merge = false;
+            let mergeValue = -1;
+            let mergeValue_j = -1;
+            let mergeValue_i = -1;
+            for (let j = last_cell; j < GAME_SIZE; j++) {
+                if (gameField[i][j] == undefined) {
+                    continue;
+                }
+
+                if (merge == false) {
+                    mergeValue_i = i;
+                    mergeValue_j = j;
+                    mergeValue = gameField[i][j];
+                    merge = true;
+                    continue;
+                }
+
+                if (gameField[i][j] == mergeValue) {
+                    gameField[mergeValue_i][mergeValue_j] = undefined;
+                    gameField[i][j] = mergeValue * 2;
+                    merge = false;
+                    moved = true;
+                    continue;
+                }
+
+                mergeValue = gameField[i][j];
+                mergeValue_i = i;
+                mergeValue_j = j;
+            }
+        }
+
+        for (let i = 0; i < GAME_SIZE; i++) {
+            let last_cell = 0;
+            for (let j = last_cell; j < GAME_SIZE; j++) {
+                if (gameField[i][j] == undefined) {
+                    continue;
+                }
+
+                let value = gameField[i][j];
+                for (let k = j; k > last_cell; k--) {
+                    gameField[i][k] = undefined;
+                    gameField[i][k - 1] = value;
+                    moved = true;
+                }
+
+                last_cell += 1;
+            }
+        }
+
+        if (moved) {
+            generateRandomValue();
+        }
+    }
+
+    function mergeRight() {
+
+        let moved = false;
+
+        for (let i = 0; i < GAME_SIZE; i++) {
+            let last_cell = GAME_SIZE-1;
+            let merge = false;
+            let mergeValue = -1;
+            let mergeValue_j = -1;
+            let mergeValue_i = -1;
+            for (let j = last_cell; j >= 0; j--) {
+                if (gameField[i][j] == undefined) {
+                    continue;
+                }
+
+                if (merge == false) {
+                    mergeValue_i = i;
+                    mergeValue_j = j;
+                    mergeValue = gameField[i][j];
+                    merge = true;
+                    continue;
+                }
+
+                if (gameField[i][j] == mergeValue) {
+                    gameField[mergeValue_i][mergeValue_j] = undefined;
+                    gameField[i][j] = mergeValue * 2;
+                    merge = false;
+                    moved = true;
+                    continue;
+                }
+
+                mergeValue = gameField[i][j];
+                mergeValue_i = i;
+                mergeValue_j = j;
+            }
+        }
+
+        for (let i = 0; i < GAME_SIZE; i++) {
+            let last_cell = GAME_SIZE-1;
+            for (let j = last_cell; j >= 0; j--) {
+                if (gameField[i][j] == undefined) {
+                    continue;
+                }
+
+                let value = gameField[i][j];
+                for (let k = j; k < last_cell; k++) {
+                    gameField[i][k] = undefined;
+                    gameField[i][k + 1] = value;
+                    moved = true;
+                }
+
+                last_cell -= 1;
+            }
+        }
+
+        if (moved) {
+            generateRandomValue();
+        }
+    }
+
+    function mergeUp() {
+        console.log("a");
+
+        let moved = false;
+
+        for (let i = 0; i < GAME_SIZE; i++) {
+            let last_cell = 0;
+            let merge = false;
+            let mergeValue = -1;
+            let mergeValue_j = -1;
+            let mergeValue_i = -1;
+            for (let j = last_cell; j < GAME_SIZE; j++) {
+                if (gameField[j][i] == undefined) {
+                    continue;
+                }
+
+                if (merge == false) {
+                    mergeValue_i = i;
+                    mergeValue_j = j;
+                    mergeValue = gameField[j][i];
+                    merge = true;
+                    continue;
+                }
+
+                if (gameField[j][i] == mergeValue) {
+                    gameField[mergeValue_j][mergeValue_i] = undefined;
+                    gameField[j][i] = mergeValue * 2;
+                    merge = false;
+                    moved = true;
+                    continue;
+                }
+
+                mergeValue = gameField[j][i];
+                mergeValue_i = i;
+                mergeValue_j = j;
+            }
+        }
+
+        for (let i = 0; i < GAME_SIZE; i++) {
+            let last_cell = 0;
+            for (let j = last_cell; j < GAME_SIZE; j++) {
+                if (gameField[j][i] == undefined) {
+                    continue;
+                }
+
+                let value = gameField[j][i];
+                for (let k = j; k > last_cell; k--) {
+                    gameField[k][i] = undefined;
+                    gameField[k-1][i] = value;
+                    moved = true;
+                }
+
+                last_cell += 1;
+            }
+        }
+
+        if (moved) {
+            generateRandomValue();
+        }
+    }
+
+    function mergeDown() {
+        console.log("a");
+
+        let moved = false;
+
+        for (let i = 0; i < GAME_SIZE; i++) {
+            let last_cell = GAME_SIZE - 1;
+            let merge = false;
+            let mergeValue = -1;
+            let mergeValue_j = -1;
+            let mergeValue_i = -1;
+            for (let j = last_cell; j >= 0; j--) {
+                if (gameField[j][i] == undefined) {
+                    continue;
+                }
+
+                if (merge == false) {
+                    mergeValue_i = i;
+                    mergeValue_j = j;
+                    mergeValue = gameField[j][i];
+                    merge = true;
+                    continue;
+                }
+
+                if (gameField[j][i] == mergeValue) {
+                    gameField[mergeValue_j][mergeValue_i] = undefined;
+                    gameField[j][i] = mergeValue * 2;
+                    merge = false;
+                    moved = true;
+                    continue;
+                }
+
+                mergeValue = gameField[j][i];
+                mergeValue_i = i;
+                mergeValue_j = j;
+            }
+        }
+
+        for (let i = 0; i < GAME_SIZE; i++) {
+            let last_cell = GAME_SIZE - 1;
+            for (let j = last_cell; j >= 0; j--) {
+                if (gameField[j][i] == undefined) {
+                    continue;
+                }
+
+                let value = gameField[j][i];
+                for (let k = j; k < last_cell; k++) {
+                    gameField[k][i] = undefined;
+                    gameField[k + 1][i] = value;
+                    moved = true;
+                }
+
+                last_cell -= 1;
+            }
+        }
+
+        if (moved) {
+            generateRandomValue();
+        }
+    }
+    
+    function display() {
+        TABLE.innerHTML = "";
+        for(let i = 0; i < GAME_SIZE; i++) {
+            let tr = document.createElement("tr");
+            for (let j = 0; j < GAME_SIZE; j++) {
+                let td = document.createElement("td")
+                let cellValue = gameField[i][j] == undefined ? undefined :  gameField[i][j];
+
+                if (cellValue != undefined) {
+                    let div = document.createElement("div");
+                    div.classList.add(`v${cellValue}`)
+                    div.classList.add(`cell-block`)
+                    if (styleField[i][j] == "new") {
+                        div.classList.add('new-cell')
+                        styleField[i][j] = undefined;
+                    }
+                    div.innerHTML = cellValue;
+                    td.appendChild(div);
+                }
+
+                
+                tr.appendChild(td);
+            }
+            TABLE.appendChild(tr);
+        }
+    }
+
+    document.addEventListener("keypress", function (e) {
+        oldGameField = gameField;
+        e = e || window.event;
+
+        let key = e.keyCode;
+
+        console.log(key);
+        switch(key) {
+            case 100:
+                mergeRight();
+                display();
+                break;
+            case 97:
+                mergeLeft();
+                display();
+                break;
+            case 119:
+                mergeUp();
+                display();
+                break;
+            case 115:
+                mergeDown();
+                display();
+                break;
+            case 114:
+                reset();
+        }
+
+        update();
+    });
+
+    init();
+    display();
+
+
+</script>
+</html>
